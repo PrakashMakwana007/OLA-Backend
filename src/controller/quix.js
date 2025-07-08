@@ -3,24 +3,25 @@ import apiError from '../utils/apiError.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { Quiz } from '../models/quiz.model.js';
 import { QuizResponse } from '../models/qyuzRes.js';
-
 const cratequiz = asyncHandler(async (req, res) => {
-    const { courseId, questions } = req.body;
-    // console.log("Incoming quiz body:", req.body);
+  const { courseId, questions } = req.body;
 
-    if (!courseId || !questions || !Array.isArray(questions) || questions.length === 0) {
-        throw new apiError(400, "courseId and questions are required");
-    }
+  if (!courseId || !questions || !Array.isArray(questions) || questions.length === 0) {
+    throw new apiError(400, "courseId and questions are required");
+  }
 
-    const quiz = await Quiz.create({
-        course: courseId,
-        questions: questions  
-    });
+  // ✅ Add teacherId from authenticated user
+  const quiz = await Quiz.create({
+    course: courseId,
+    questions: questions,
+    teacherId: req.user._id, // ✅ this fixes the validation error
+  });
 
-    return res.status(200).json(
-        new apiResponse(200, quiz, "Quiz created successfully")
-    );
+  return res.status(200).json(
+    new apiResponse(200, quiz, "Quiz created successfully")
+  );
 });
+
 
 const getAllquiz = asyncHandler(async (req, res) => {
   const quiz = await Quiz.find().populate({

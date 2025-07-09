@@ -4,30 +4,40 @@ import cookieParser from 'cookie-parser';
 import userRouter from './routes/user.route.js';
 import courseRouter from './routes/coures.route.js'; 
 import quizRouter from './routes/quiz.route.js';
-import  EnrolmentRouter  from './routes/enrolment.route.js';
+import EnrolmentRouter from './routes/enrolment.route.js';
 import errorHandler from './middlewares/error.mideel.js';
 import path from 'path';
-const app = express(); 
+
+const app = express();
+
+// ✅ Best-practice CORS setup
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://ola-frontend-dun.vercel.app'
+];
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',//local
-    'https://ola-frontend-dun.vercel.app'// vercel app
-  ],
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS not allowed for this origin"));
+  },
+  credentials: true,
 }));
 
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// Routes
+// ✅ Routes
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/course', courseRouter); 
-app.use('/api/v1/quiz' ,quizRouter )
-app.use('/api/v1/enrolment',EnrolmentRouter)
+app.use('/api/v1/quiz', quizRouter);
+app.use('/api/v1/enrolment', EnrolmentRouter);
 
+// ✅ Global Error Handler
+app.use(errorHandler);
 
-app.use(errorHandler)
 export default app;

@@ -21,42 +21,42 @@ const generateTokens = async (userId) => {
 
 // User Registration
 const register = asyncHandler(async (req, res) => {
-    const { fullName, email, password, role } = req.body;
+  const { fullName, email, password, role } = req.body;
 
-    if (!fullName || !email || !password || !role) {
-        throw new apiError(400, "All fields are required.");
-    }
+  if (!fullName || !email || !password || !role) {
+    throw new apiError(400, "All fields are required.");
+  }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        throw new apiError(400, "User already exists.");
-    }
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new apiError(400, "User already exists.");
+  }
 
-    // Create user
-    const user = await User.create({
-        fullName,
-        email,
-        password,
-        role,
-    });
+  // Create user
+  const user = await User.create({
+    fullName,
+    email,
+    password,
+    role,
+  });
 
-    const accessToken = generateTokens(user._id); // <-- Add this
-    const refreshToken = generateTokens(user._id); // <-- Add this
+ 
+  const { accessToken, refreshToken } = await generateTokens(user._id);
 
-    // Save refreshToken if you're using it later
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
 
-    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-    return res.status(201).json(
-        new apiResponse(201, {
-            user: createdUser,
-            accessToken,
-            refreshToken
-        }, "User created successfully.")
-    );
+  return res.status(201).json(
+    new apiResponse(201, {
+      user: createdUser,
+      accessToken,
+      refreshToken
+    }, "User created successfully.")
+  );
 });
+
 
 
 // User Login

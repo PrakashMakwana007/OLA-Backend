@@ -13,7 +13,8 @@ const app = express();
 // ✅ Best-practice CORS setup
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://ola-frontend-dun.vercel.app'
+  'https://ola-frontend-dun.vercel.app',
+  "https://ola-frontend-dun.vercel.app/"
 ];
 
 app.use(cors({

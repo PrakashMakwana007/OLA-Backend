@@ -7,15 +7,27 @@ import quizRouter from './routes/quiz.route.js';
 import EnrolmentRouter from './routes/enrolment.route.js';
 import errorHandler from './middlewares/error.mideel.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+const originaluse = app.use;
+// ✅ Serve static files from Vite build
+app.use(express.static(path.join(__dirname, '../../../ONL_APP/dist')));
 
-// CORS Setup
+app.use = function (...args) {
+  if (typeof args[0] === 'string') {
+    console.log('[DEBUG app.use path]:', args[0]);
+  }
+  return originaluse.apply(this, args);
+};
+
 const allowedOrigins = [
   'http://localhost:5173',
   'https://ola-frontend-dun.vercel.app',
-  "https://ola-frontend-dun.vercel.app/"
+  'https://ola-frontend-dun.vercel.app/'
 ];
 
 app.use(cors({
@@ -29,19 +41,23 @@ app.use(cors({
 }));
 
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-//  API Routes
+// ✅ API Routes
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/course', courseRouter); 
 app.use('/api/v1/quiz', quizRouter);
 app.use('/api/v1/enrolment', EnrolmentRouter);
 
-//  Error Handler
+// ✅ Error Handler
 app.use(errorHandler);
+
+// ✅ Fallback route for React Router (MUST BE LAST)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../ONL_APP/dist/index.html'));
+});
 
 export default app;

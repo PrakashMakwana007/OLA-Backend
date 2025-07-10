@@ -7,21 +7,9 @@ import quizRouter from './routes/quiz.route.js';
 import EnrolmentRouter from './routes/enrolment.route.js';
 import errorHandler from './middlewares/error.mideel.js';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
-
-
-app.use(express.static(path.join(__dirname, '../../../ONL_APP/dist')));
-
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../ONL_APP/dist/index.html'));
-});
 
 // CORS Setup
 const allowedOrigins = [
@@ -39,10 +27,7 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use((req, res, next) => {
-  console.log(`[ROUTE CHECK] ${req.method} ${req.originalUrl}`);
-  next();
-});
+
 
 
 app.use(express.json());

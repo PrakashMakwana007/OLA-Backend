@@ -7,16 +7,25 @@ import quizRouter from './routes/quiz.route.js';
 import EnrolmentRouter from './routes/enrolment.route.js';
 import errorHandler from './middlewares/error.mideel.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, '../../../ONL_APP/dist'))); 
 
 const app = express();
 
-// ✅ Best-practice CORS setup
+
 const allowedOrigins = [
   'http://localhost:5173',
   'https://ola-frontend-dun.vercel.app',
   "https://ola-frontend-dun.vercel.app/"
 ];
 
+app.get('*',(req , res )=>{
+  res.sendFile(path.join(__dirname,'../../../ONL_APP/dist/index.html'))
+})
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -32,13 +41,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// ✅ Routes
+
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/course', courseRouter); 
 app.use('/api/v1/quiz', quizRouter);
 app.use('/api/v1/enrolment', EnrolmentRouter);
 
-// ✅ Global Error Handler
+
 app.use(errorHandler);
 
 export default app;

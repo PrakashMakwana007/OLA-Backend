@@ -26,7 +26,9 @@ app.use = function (...args) {
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://ola-frontend-dun.vercel.app',
+  "https://ola-frontend-doo7pc1sg-makwana-prakashs-projects.vercel.app/",
+  "https://ola-frontend-git-main-makwana-prakashs-projects.vercel.app/",
+  "https://ola-frontend-dun.vercel.app/",
   'https://ola-frontend-dun.vercel.app/'
 ];
 
